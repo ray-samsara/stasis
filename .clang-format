@@ -1,0 +1,18 @@
+Language: Cpp
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterControlStatement: Always
+  AfterFunction: true
+  AfterClass: true
+  AfterStruct: true
+  AfterNamespace: true
+  AfterEnum: true
+  BeforeElse: true
+
+IndentWidth: 2
+IndentCaseLabels: true
+IndentCaseBlocks: true
+NamespaceIndentation: All
+IndentAccessModifiers: true

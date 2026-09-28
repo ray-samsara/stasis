@@ -1,0 +1,10 @@
+[Makefile]
+indent-style = tab
+
+[*.cpp]
+indent-size = 2
+indent-style = space
+
+[*.h]
+indent-size = 2
+indent-style = space

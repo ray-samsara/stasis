@@ -1,0 +1,13 @@
+[submodule "vendor/ProgramOptions.hxx"]
+	path = vendor/ProgramOptions.hxx
+	url = https://github.com/Fytch/ProgramOptions.hxx
+[submodule "vendor/rang"]
+	path = vendor/rang
+	url = https://github.com/agauniyal/rang
+[submodule "vendor/inifile-cpp"]
+	path = vendor/inifile-cpp
+	url = https://github.com/Rookfighter/inifile-cpp.git
+
+[submodule "vendor/spdlog"]
+	path = vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
