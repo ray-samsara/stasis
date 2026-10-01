@@ -1,7 +1,3 @@
-<a align="center" href="https://ray-samsara.github.io/projects/stasis.html">https://ray-samsara.github.io/projects/stasis.html</a>
-
-===
-
 ## Building
 
 ### TL;DR
@@ -45,7 +41,7 @@ stasis depends on...
 1. **inifile-cpp**: for parsing project info
 2. **ProgramOptions.hxx**: for the CLI
 3. **rang**: for colors in the terminal
-4. **spdlog**: debug logs
+4. **maddy**: markdown parsing
 
 >[!WARNING]
 >Terminal colors may not show on Microsoft Windows 10 1507 and older.

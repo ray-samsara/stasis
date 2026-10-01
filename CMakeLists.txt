@@ -28,11 +28,6 @@ add_subdirectory(
   "${CMAKE_CURRENT_BINARY_DIR}/inifile-cpp"
 )
 
-add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog"
-  "${CMAKE_CURRENT_BINARY_DIR}/spdlog"
-)
-
 add_executable(stasis
   src/main.cpp
   src/app.cpp
@@ -49,5 +44,4 @@ target_link_libraries(stasis PRIVATE
   ProgramOptionsHxx
   rang
   inicpp::inicpp
-  spdlog::spdlog_header_only
 )

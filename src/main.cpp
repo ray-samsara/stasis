@@ -1,12 +1,34 @@
+// Copyright (c) 2026 Ray Samsara
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <iostream>
+
+// local
+#include <common/logging.hpp>
 
 #include "app.hpp"
 #include "output.hpp"
-#include "spdlog/common.h"
 
+// vendor
 #include <ProgramOptions.hxx>
 #include <rang.hpp>
-#include <spdlog/spdlog.h>
 
 auto main(int argc, char *argv[]) -> int
 {
@@ -15,8 +37,8 @@ auto main(int argc, char *argv[]) -> int
 #endif
   rang::setControlMode(rang::control::Force);
 
-  // don't make spdlog print anything at first
-  spdlog::set_level(spdlog::level::off);
+  // don't log anything at first unless it's fatal
+  stasis::logging::current_level = stasis::logging::level::NoLog;
 
   po::parser parser;
 
@@ -34,6 +56,12 @@ auto main(int argc, char *argv[]) -> int
 
   std::string directory;
   parser[""].description("Target directory (default: .)").bind(directory);
+
+  std::string output;
+  parser["output"]
+      .abbreviation('o')
+      .description("('--build' only) Directory to write output on")
+      .bind(output);
 
   auto &help =
       parser["help"].abbreviation('h').description("shows this message");
@@ -58,11 +86,11 @@ auto main(int argc, char *argv[]) -> int
   }
 
   if (flag_verbose.was_set())
-    spdlog::set_level(spdlog::level::trace);
+    stasis::logging::current_level = stasis::logging::level::Trace;
 
   stasis::app app(argv[0], flag_create.available(), flag_build.available(),
                   directory, name);
 
-  spdlog::debug("starting app...");
+  STASIS_TRACE("starting app");
   return app.run();
 }
