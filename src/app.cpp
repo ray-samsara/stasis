@@ -23,10 +23,15 @@
 #include <filesystem>
 
 // local
-#include <common/logging.hpp>
+#include <common/global.hpp>
 
+#include "common/logging.hpp"
 #include "jobs/create/create.hpp"
+#include "jobs/j_build/build.hpp"
 #include "output.hpp"
+#include "project.hpp"
+
+namespace fs = std::filesystem;
 
 stasis::app::app(std::string argv_0, bool creates, bool builds, std::string dir,
                  std::string name)
@@ -106,7 +111,7 @@ auto stasis::app::run(void) -> int
   if (this->directory.empty())
   {
     STASIS_INFO("no dir set so dir is now the cwd");
-    this->directory = std::filesystem::weakly_canonical(".").string();
+    this->directory = fs::weakly_canonical(".").string();
   }
 
   if (mode == stasis::app_mode::create)
@@ -119,12 +124,10 @@ auto stasis::app::run(void) -> int
   }
   else
   {
-    stasis::output::warning(
-        "TODO: run mode/job '{}' with files from '{}' on '{}'",
-        this->mode_str_repr, this->directory, this->build_output_directory);
-    stasis::output::warning("mode/job '{}' is not implemented yet",
-                            this->mode_str_repr);
-    exit_code = 1;
+    stasis::project p(fs::path(this->directory) / fs::path(PROJECT_INFO_NAME));
+    stasis::build job(p.info);
+    STASIS_TRACE("running job");
+    exit_code = job.run();
   }
 
   return exit_code;

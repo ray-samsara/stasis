@@ -18,12 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <cerrno>
 #include <filesystem>
 
 // local
 #include <common/error.hpp>
 #include <common/logging.hpp>
+#include <common/project_info_name.hpp>
 #include <common/username.hpp>
 #include <output.hpp>
 #include <project.hpp>
@@ -59,7 +59,7 @@ auto stasis::create::run(void) -> int
   std::string project_path =
       fs::weakly_canonical(fs::path(this->directory)).string();
   std::string project_file =
-      fs::path(project_path) / fs::path(".stasis_project.ini");
+      fs::path(project_path) / fs::path(PROJECT_INFO_NAME);
 
   if (this->project_name.empty())
   {

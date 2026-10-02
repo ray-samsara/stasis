@@ -80,7 +80,10 @@ auto stasis::file::read() -> void
     THROW_ERROR;
 
   std::fread(c_buffer, 1, length, this->handle);
+  STASIS_WARNING(
+      "cstdio: error handling from reading files is not implemented yet");
 
+  /*
   STASIS_INFO("cstdio: clearing out false-negative error indicators");
   std::clearerr(this->handle);
 
@@ -93,7 +96,7 @@ auto stasis::file::read() -> void
           "cstdio: feof() did not return non-zero; throwing exception");
       ERROR(1, "Unknown error while reading the file");
     }
-  }
+  }*/
 
   this->buffer = std::string(c_buffer);
   delete c_buffer;

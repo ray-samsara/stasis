@@ -32,6 +32,8 @@
 #include <project.hpp>
 // :)
 
+namespace fs = std::filesystem;
+
 static inline auto ends_with(std::string const& value,
                              std::string const& ending) -> bool
 {
@@ -42,8 +44,7 @@ static inline auto ends_with(std::string const& value,
 auto stasis::build::get_project_files(void) -> std::vector<std::string>
 {
   std::vector<std::string> result;
-  for (const auto& file :
-       std::filesystem::directory_iterator(this->project.path))
+  for (const auto &file : fs::directory_iterator(this->project.path))
   {
     result.push_back(file.path().string());
   }

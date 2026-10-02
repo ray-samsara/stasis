@@ -28,6 +28,7 @@
 #endif
 #include <common/error.hpp>
 #include <common/logging.hpp>
+#include <common/project_info_name.hpp>
 #include <wrappers/stdio/stdio.hpp>
 
 namespace fs = std::filesystem;
@@ -50,7 +51,7 @@ stasis::project::project(std::string filepath)
   }
 
   project_path = fs::path(fs::weakly_canonical(fs::path(this->info.path)) /
-                          fs::path(".stasis_project.ini"))
+                          fs::path(PROJECT_INFO_NAME))
                      .string();
 
   STASIS_TRACE("project_path = '{}'", project_path);
@@ -61,7 +62,7 @@ stasis::project::project(project_info data)
 {
   STASIS_TRACE("[constructor] ---- stasis::project ---- (writing)");
   project_path = fs::path(fs::weakly_canonical(fs::path(this->info.path)) /
-                          fs::path(".stasis_project.ini"))
+                          fs::path(PROJECT_INFO_NAME))
                      .string();
 
   if (data.empty())

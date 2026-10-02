@@ -34,6 +34,7 @@ add_executable(stasis
   src/wrappers/stdio/stdio.cpp
   src/project.cpp
   src/jobs/create/create.cpp
+  src/jobs/j_build/build.cpp
 )
 
 target_include_directories(stasis PRIVATE
