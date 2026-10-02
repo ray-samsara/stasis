@@ -20,4 +20,4 @@
 
 #pragma once
 
-#define PROJECT_INFO_NAME ".stasis_project.ini"
+#define PROJECT_INFO_NAME ".stasis_project.json"

@@ -4,13 +4,9 @@
 [submodule "vendor/rang"]
 	path = vendor/rang
 	url = https://github.com/agauniyal/rang
-[submodule "vendor/inifile-cpp"]
-	path = vendor/inifile-cpp
-	url = https://github.com/Rookfighter/inifile-cpp.git
-
-[submodule "vendor/spdlog"]
-	path = vendor/spdlog
-	url = https://github.com/gabime/spdlog.git
 [submodule "vendor/maddy"]
 	path = vendor/maddy
 	url = https://github.com/progsource/maddy.git
+[submodule "vendor/json"]
+	path = vendor/json
+	url = https://github.com/nlohmann/json.git

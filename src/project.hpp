@@ -20,12 +20,13 @@
 
 #pragma once
 
+#include "nlohmann/json_fwd.hpp"
 #include <string>
 
 #include <common/error.hpp>
 
 // vendor
-#include <inicpp.h>
+#include <nlohmann/json.hpp>
 
 // TODO: clang-format isn't formatting the indentation properly (4 spaces
 // instead of 2)... FIX IT!
@@ -63,13 +64,13 @@ namespace stasis
       // serialize 'p' into std::string ini
       static auto to(project_info p) -> std::string
       {
-        ini::IniFile cfg;
+        nlohmann::json cfg;
         cfg["stasis_project"]["name"] = p.name;
         cfg["stasis_project"]["path"] = p.path;
         cfg["stasis_project"]["version"] = p.version;
         cfg["stasis_project"]["author"] = p.author;
         cfg["stasis_project"]["license"] = p.license;
-        return cfg.encode();
+        return nlohmann::to_string(cfg);
       }
 
       // deserialize 'cfg' (config CONTENTS, not filepath) to
@@ -77,13 +78,12 @@ namespace stasis
       static auto from(std::string cfg) -> project_info
       {
         project_info p;
-        ini::IniFile cfg_ini;
-        cfg_ini.decode(cfg);
-        p.name = cfg_ini["stasis_project"]["name"].as<std::string>();
-        p.path = cfg_ini["stasis_project"]["path"].as<std::string>();
-        p.version = cfg_ini["stasis_project"]["version"].as<std::string>();
-        p.author = cfg_ini["stasis_project"]["author"].as<std::string>();
-        p.license = cfg_ini["stasis_project"]["license"].as<std::string>();
+        nlohmann::json cfg_ini = nlohmann::json::parse(cfg).dump(2);
+        p.name = cfg_ini["stasis_project"]["name"];
+        p.path = cfg_ini["stasis_project"]["path"];
+        p.version = cfg_ini["stasis_project"]["version"];
+        p.author = cfg_ini["stasis_project"]["author"];
+        p.license = cfg_ini["stasis_project"]["license"];
         return p;
       }
   };

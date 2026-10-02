@@ -38,7 +38,7 @@ stasis, like other projects of mine, **vendors** dependencies. This means nothin
 
 <!-- TODO: href these -->
 stasis depends on...
-1. **inifile-cpp**: for parsing project info
+1. **nlohmann/json**: for parsing project info
 2. **ProgramOptions.hxx**: for the CLI
 3. **rang**: for colors in the terminal
 4. **maddy**: markdown parsing

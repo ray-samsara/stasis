@@ -24,8 +24,8 @@ add_subdirectory(
 )
 
 add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/vendor/inifile-cpp"
-  "${CMAKE_CURRENT_BINARY_DIR}/inifile-cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/vendor/json"
+  "${CMAKE_CURRENT_BINARY_DIR}/json"
 )
 
 add_executable(stasis
@@ -44,5 +44,5 @@ target_include_directories(stasis PRIVATE
 target_link_libraries(stasis PRIVATE
   ProgramOptionsHxx
   rang
-  inicpp::inicpp
+  nlohmann_json::nlohmann_json
 )

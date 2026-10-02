@@ -1,6 +1,6 @@
 -Ivendor/ProgramOptions.hxx/include
 -Ivendor/rang/include
--Ivendor/inifile-cpp/include
+-Ivendor/json/include
 -Ivendor/spdlog/include
 -Isrc/
 -std=c++20
