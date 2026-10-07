@@ -38,7 +38,7 @@ stasis::project::project(std::string filepath)
 {
   STASIS_TRACE("[constructor] ---- stasis::project ---- (reading)");
 
-  STASIS_TRACE("reading from file '{}'", filepath);
+  STASIS_TRACE("reading json from file '{}'", filepath);
   try
   {
     stasis::file cfg(filepath);
@@ -68,7 +68,7 @@ stasis::project::project(project_info data)
   if (data.empty())
     ERROR(1, "project info cannot be empty");
 
-  STASIS_TRACE("writing ini data to '{}'", project_path);
+  STASIS_TRACE("writing json data to '{}'", project_path);
   try
   {
     stasis::file cfg(project_path);

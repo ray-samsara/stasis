@@ -46,7 +46,7 @@ stasis::create::create(std::string name, std::string dir,
   stasis::logging::current_tail = "create";
   STASIS_TRACE("[constructor] ---- stasis::create ----");
   project_name = name;
-  directory = fs::weakly_canonical(dir);
+  directory = fs::weakly_canonical(dir).string();
   init_options = i_opts;
   meta_options = m_opts;
 }
@@ -59,7 +59,7 @@ auto stasis::create::run(void) -> int
   std::string project_path =
       fs::weakly_canonical(fs::path(this->directory)).string();
   std::string project_file =
-      fs::path(project_path) / fs::path(PROJECT_INFO_NAME);
+      (fs::path(project_path) / fs::path(PROJECT_INFO_NAME)).string();
 
   if (this->project_name.empty())
   {
