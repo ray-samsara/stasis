@@ -36,7 +36,6 @@ add_subdirectory(
 add_executable(stasis
   src/main.cpp
   src/app.cpp
-  src/wrappers/stdio/stdio.cpp
   src/project.cpp
   src/jobs/create/create.cpp
   src/jobs/j_build/build.cpp

@@ -22,6 +22,7 @@
 #include <exception>
 #include <filesystem>
 #include <format>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -33,7 +34,6 @@
 #include <common/logging.hpp>
 #include <output.hpp>
 #include <project.hpp>
-#include <wrappers/stdio/stdio.hpp>
 // :)
 
 // vendor
@@ -79,15 +79,13 @@ auto stasis::build::parse_file_to_directory(std::string file, fs::path dirpath)
   std::string md_src;
   try
   {
-    stasis::file md_file(file);
-    md_file.read();
-    md_src = md_file.buffer;
-    assert(!md_src.empty());
+    std::fstream md_file(file);
+    md_src_stream << md_file.rdbuf();
   } catch (stasis::last_error e)
   {
     THROW_ERROR;
   }
-  md_src_stream << md_src;
+  md_src = md_src_stream.str();
 
   maddy::Parser parser;
   STASIS_TRACE("---- output of '{}' -----", file);

@@ -22,6 +22,7 @@
 
 #include <cstdio>
 #include <filesystem>
+#include <fstream>
 
 #ifdef _WIN32
 #define NOGDI
@@ -29,7 +30,6 @@
 #include <common/error.hpp>
 #include <common/logging.hpp>
 #include <common/project_info_name.hpp>
-#include <wrappers/stdio/stdio.hpp>
 
 namespace fs = std::filesystem;
 
@@ -41,9 +41,10 @@ stasis::project::project(std::string filepath)
   STASIS_TRACE("reading json from file '{}'", filepath);
   try
   {
-    stasis::file cfg(filepath);
-    cfg.read();
-    this->info = this->info.from(cfg.buffer);
+    std::ifstream cfg(filepath);
+    std::stringstream buffer_ss;
+    buffer_ss << cfg.rdbuf();
+    this->info = this->info.from(buffer_ss.str());
   } catch (stasis::last_error e)
   {
     STASIS_ERROR("caught an 'stasis::last_error'");
@@ -71,8 +72,8 @@ stasis::project::project(project_info data)
   STASIS_TRACE("writing json data to '{}'", project_path);
   try
   {
-    stasis::file cfg(project_path);
-    cfg.write(data.to(data));
+    std::ofstream cfg(project_path);
+    cfg << data.to(data);
   } catch (stasis::last_error e)
   {
     STASIS_ERROR("caught an 'stasis::last_error'");
