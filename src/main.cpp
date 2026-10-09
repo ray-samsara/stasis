@@ -18,10 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <cstdlib>
 #include <iostream>
 
 // local
 #include <common/logging.hpp>
+#include <common/version.hpp>
 
 #include "app.hpp"
 #include "output.hpp"
@@ -41,6 +43,16 @@ auto main(int argc, char *argv[]) -> int
   stasis::logging::current_level = stasis::logging::level::NoLog;
 
   po::parser parser;
+
+  auto &flag_version = parser["version"]
+                           .abbreviation('V')
+                           .description("Show version info")
+                           .callback([]() {
+                             std::printf("stasis %s\n", STASIS_VERSION);
+                             std::printf("--------------\n");
+                             std::printf("%s\n", STASIS_LICENSE_INFO);
+                             std::exit(0);
+                           });
 
   auto &flag_verbose =
       parser["verbose"].abbreviation('v').description("Enable debug output");

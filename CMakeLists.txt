@@ -12,6 +12,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if(MSVC)
+  message(FATAL_ERROR "stasis (or any of my [Ray Samsara's] projects) does not and will not compile for MSVC.")
+endif(MSVC)
+
 add_subdirectory(
   "${CMAKE_CURRENT_SOURCE_DIR}/vendor/ProgramOptions.hxx"
   "${CMAKE_CURRENT_BINARY_DIR}/ProgramOptions.hxx"
@@ -40,6 +44,8 @@ add_executable(stasis
   src/jobs/create/create.cpp
   src/jobs/j_build/build.cpp
 )
+
+target_compile_definitions(stasis PRIVATE UNICODE _UNICODE)
 
 target_include_directories(stasis PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/src"
