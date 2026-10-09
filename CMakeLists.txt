@@ -28,6 +28,11 @@ add_subdirectory(
   "${CMAKE_CURRENT_BINARY_DIR}/json"
 )
 
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/vendor/maddy"
+  "${CMAKE_CURRENT_BINARY_DIR}/maddy"
+)
+
 add_executable(stasis
   src/main.cpp
   src/app.cpp
@@ -45,4 +50,5 @@ target_link_libraries(stasis PRIVATE
   ProgramOptionsHxx
   rang
   nlohmann_json::nlohmann_json
+  maddy
 )

@@ -24,8 +24,11 @@
 #include <project.hpp>
 // :0
 
+#include <filesystem>
 #include <string>
 #include <vector>
+
+namespace fs = std::filesystem;
 
 namespace stasis
 {
@@ -38,9 +41,10 @@ namespace stasis
       auto filter_files_by_extension(std::vector<std::string> files,
                                      std::string extension)
           -> std::vector<std::string>;
+      auto parse_file_to_directory(std::string file, fs::path dirpath) -> void;
 
     public:
       build(stasis::project_info pi, std::string out_dir = "");
       auto run(void) -> int;
   };
-}  // namespace stasis
+} // namespace stasis

@@ -25,7 +25,6 @@
 
 namespace stasis
 {
-
   class file
   {
     private:

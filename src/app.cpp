@@ -126,7 +126,7 @@ auto stasis::app::run(void) -> int
   {
     stasis::project p(
         (fs::path(this->directory) / fs::path(PROJECT_INFO_NAME)).string());
-    stasis::build job(p.info);
+    stasis::build job(p.info, this->build_output_directory);
     STASIS_TRACE("running job");
     exit_code = job.run();
   }

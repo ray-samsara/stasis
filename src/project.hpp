@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "common/logging.hpp"
 #include "nlohmann/json_fwd.hpp"
 #include <string>
 
@@ -61,7 +62,8 @@ namespace stasis
                this->license.empty();
       }
 
-      // serialize 'p' into std::string ini
+      // TODO: output needs to be pretty
+      // serialize 'p' into std::string json
       static auto to(project_info p) -> std::string
       {
         nlohmann::json cfg;
@@ -77,14 +79,23 @@ namespace stasis
       // project_info
       static auto from(std::string cfg) -> project_info
       {
-        project_info p;
-        nlohmann::json cfg_ini = nlohmann::json::parse(cfg).dump(2);
-        p.name = cfg_ini["stasis_project"]["name"];
-        p.path = cfg_ini["stasis_project"]["path"];
-        p.version = cfg_ini["stasis_project"]["version"];
-        p.author = cfg_ini["stasis_project"]["author"];
-        p.license = cfg_ini["stasis_project"]["license"];
-        return p;
+        try
+        {
+          project_info p;
+          nlohmann::json cfg_ini = nlohmann::json::parse(cfg);
+          p.name = cfg_ini["stasis_project"]["name"];
+          p.path = cfg_ini["stasis_project"]["path"];
+          p.version = cfg_ini["stasis_project"]["version"];
+          p.author = cfg_ini["stasis_project"]["author"];
+          p.license = cfg_ini["stasis_project"]["license"];
+          return p;
+        } catch (const std::exception &ex)
+        {
+          STASIS_ERROR("caught exception while parsing contents of 'cfg': {}",
+                       ex.what());
+          STASIS_INFO("throwing exception back");
+          ERROR(1, ex.what());
+        }
       }
   };
 

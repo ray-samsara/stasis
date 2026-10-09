@@ -66,7 +66,7 @@ auto stasis::file::read() -> void
   char *c_buffer;
   std::string result;
 
-  STASIS_TRACE("cstdio: fopen()'ing '{}' for reading", this->filename);
+  STASIS_TRACE("[cstdio] fopen()'ing '{}' for reading", this->filename);
   this->handle = std::fopen(this->c_filename, "r");
   if (!this->handle)
     THROW_ERROR;
@@ -81,7 +81,7 @@ auto stasis::file::read() -> void
 
   std::fread(c_buffer, 1, length, this->handle);
   STASIS_WARNING(
-      "cstdio: error handling from reading files is not implemented yet");
+      "[cstdio] error handling from reading files is not implemented yet");
 
   /*
   STASIS_INFO("cstdio: clearing out false-negative error indicators");
@@ -118,23 +118,37 @@ auto stasis::file::write(std::string data) -> void
 
   if (!this->handle)
   {
-    STASIS_TRACE("cstdio: fopen()'ing '{}' for writing", this->filename);
+    STASIS_TRACE("[cstdio] handle is NULL");
+    STASIS_TRACE("[cstdio] fopen()'ing '{}' for writing", this->filename);
     this->handle = std::fopen(this->c_filename, "w");
     if (!this->handle)
     {
-      STASIS_ERROR("cstdio: handle is NULL; trying again for some reason?");
+      STASIS_ERROR("[cstdio] handle is NULL; trying again for some reason?");
       this->write(data);
     };
   }
 
-  STASIS_TRACE("cstdio: fputs() buffer into handle");
+  STASIS_TRACE("[cstdio] fputs() buffer into handle");
   std::fputs(this->buffer.c_str(), this->handle);
+  std::fputc('\0', this->handle);
 }
 
 stasis::file::~file()
 {
-  STASIS_INFO("[destructor] ---- stasis::file::~file ----");
-  STASIS_TRACE("closing handle that was opened for file '{}'", this->filename);
+  STASIS_TRACE("[destructor] ---- stasis::file::~file ----");
+
+  if (this->buffer[this->buffer.size()] == '\0')
+  {
+    STASIS_TRACE("[destructor] end of buffer contains null terminator");
+  }
+  else
+  {
+    STASIS_TRACE(
+        "[destructor] end of buffer does not contains null terminator");
+  }
+
+  STASIS_TRACE("[destructor] closing handle that was opened for file '{}'",
+               this->filename);
   if (this->handle)
     std::fclose(this->handle);
 }

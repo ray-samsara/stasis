@@ -18,26 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "build.hpp"
-
 #include <algorithm>
+#include <exception>
 #include <filesystem>
 #include <format>
+#include <sstream>
 #include <string>
 #include <vector>
 
 // local
+#include "build.hpp"
+
+#include <common/error.hpp>
 #include <common/logging.hpp>
 #include <output.hpp>
 #include <project.hpp>
+#include <wrappers/stdio/stdio.hpp>
 // :)
+
+// vendor
+#include <maddy/parser.h>
 
 namespace fs = std::filesystem;
 
-static inline auto ends_with(std::string const& value,
-                             std::string const& ending) -> bool
+static inline auto ends_with(std::string const &value,
+                             std::string const &ending) -> bool
 {
-  if (ending.size() > value.size()) return false;
+  if (ending.size() > value.size())
+    return false;
   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
@@ -56,16 +64,40 @@ auto stasis::build::filter_files_by_extension(std::vector<std::string> files,
     -> std::vector<std::string>
 {
   std::vector<std::string> result;
-  for (const auto& file : files)
+  for (const auto &file : files)
   {
-    if (ends_with(file, extension)) result.push_back(file);
+    if (ends_with(file, extension))
+      result.push_back(file);
   }
   return result;
 }
 
+auto stasis::build::parse_file_to_directory(std::string file, fs::path dirpath)
+    -> void
+{
+  std::stringstream md_src_stream;
+  std::string md_src;
+  try
+  {
+    stasis::file md_file(file);
+    md_file.read();
+    md_src = md_file.buffer;
+    assert(!md_src.empty());
+  } catch (stasis::last_error e)
+  {
+    THROW_ERROR;
+  }
+  md_src_stream << md_src;
+
+  maddy::Parser parser;
+  STASIS_TRACE("---- output of '{}' -----", file);
+  STASIS_TRACE("{}", parser.Parse(md_src_stream));
+  STASIS_TRACE("----   end output   -----");
+}
+
 stasis::build::build(stasis::project_info pi, std::string out_dir)
 {
-  STASIS_TRACE("INIT! stasis::build");
+  STASIS_TRACE("[constructor] ---- stasis::build ----");
   project = pi;
   if (project.empty())
   {
@@ -94,5 +126,48 @@ auto stasis::build::run(void) -> int
     stasis::output::error("no markdown files found; nothing to build");
     return 1;
   }
+
+  STASIS_INFO("[step 1] creating directories");
+  stasis::output::normal("creating build directory");
+
+  STASIS_TRACE("[step 1] checking if '{}' exists and if it's a file",
+               this->output_directory);
+  if (fs::exists(this->output_directory) &&
+      !fs::is_directory(this->output_directory))
+  {
+    STASIS_ERROR("'{}' is a file; cannot continue", this->output_directory);
+    stasis::output::error("'{}' already exists and it is not a directory");
+    return 1;
+  }
+
+  fs::path dirpath = fs::weakly_canonical(fs::path(this->output_directory));
+  STASIS_TRACE("[step 1] creating directory in '{}'", dirpath.string());
+  try
+  {
+    fs::create_directory(dirpath);
+  } catch (const std::exception &e)
+  {
+    STASIS_ERROR("[step 1] caught exception: {}", e.what());
+    stasis::output::error("couldn't create build directory in '{}': {}",
+                          dirpath.string(), e.what());
+    return 1;
+  }
+
+  STASIS_INFO("[step 2] parsing markdown files");
+  stasis::output::normal("compiling project...");
+
+  try
+  {
+    this->parse_file_to_directory(markdown_files[0], fs::path("."));
+  } catch (stasis::last_error e)
+  {
+    STASIS_ERROR("caught exception:");
+    STASIS_ERROR("{}", e.str(true));
+    STASIS_TRACE("reporting back to user");
+    stasis::output::error("cannot parse markdown file '{}': {}",
+                          markdown_files[0], e.errmsg);
+    return 1;
+  }
+
   return 0;
 }

@@ -88,8 +88,17 @@ auto main(int argc, char *argv[]) -> int
   if (flag_verbose.was_set())
     stasis::logging::current_level = stasis::logging::level::Trace;
 
-  stasis::app app(argv[0], flag_create.available(), flag_build.available(),
-                  directory, name);
+  // stasis::app app(argv[0], flag_create.available(), flag_build.available(),
+  //                directory, name);
+  stasis::app_class_constructor app_args = {
+      .creates = flag_create.available(),
+      .builds = flag_build.available(),
+      .dir = directory,
+      .name = argv[0],
+      .output_dir = output,
+  };
+
+  stasis::app app(app_args);
 
   STASIS_TRACE("starting app");
   return app.run();
