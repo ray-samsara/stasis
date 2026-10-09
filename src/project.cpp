@@ -38,17 +38,18 @@ stasis::project::project(std::string filepath)
 {
   STASIS_TRACE("[constructor] ---- stasis::project ---- (reading)");
 
-  STASIS_TRACE("reading json from file '{}'", filepath);
+  STASIS_TRACE("[constructor] reading json from file '{}'", filepath);
   try
   {
     std::ifstream cfg(filepath);
     std::stringstream buffer_ss;
     buffer_ss << cfg.rdbuf();
     this->info = this->info.from(buffer_ss.str());
-  } catch (stasis::last_error e)
+  } catch (const std::exception &e)
   {
-    STASIS_ERROR("caught an 'stasis::last_error'");
-    throw e;
+    STASIS_ERROR("[constructor] caught an exception: '{}'", e.what());
+    STASIS_TRACE("[constructor] throwing back exception");
+    THROW_ERROR_CPP(e);
   }
 
   project_path = fs::path(fs::weakly_canonical(fs::path(this->info.path)) /
@@ -69,15 +70,16 @@ stasis::project::project(project_info data)
   if (data.empty())
     ERROR(1, "project info cannot be empty");
 
-  STASIS_TRACE("writing json data to '{}'", project_path);
+  STASIS_TRACE("[constructor] writing json data to '{}'", project_path);
   try
   {
     std::ofstream cfg(project_path);
     cfg << data.to(data);
-  } catch (stasis::last_error e)
+  } catch (const std::exception &e)
   {
-    STASIS_ERROR("caught an 'stasis::last_error'");
-    throw e;
+    STASIS_ERROR("[constructor] caught an exception: '{}'", e.what());
+    STASIS_TRACE("[constructor] throwing back exception");
+    THROW_ERROR_CPP(e);
   }
 
   this->info = data;

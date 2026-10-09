@@ -29,6 +29,8 @@
 #define ERROR(x, msg) \
   throw(last_error) { .errnum = x, .errmsg = msg }
 
+#define THROW_ERROR_CPP(e) ERROR(1, e.what())
+
 #include <format>
 #include <string>
 

@@ -59,6 +59,7 @@ auto stasis::build::get_project_files(void) -> std::vector<std::string>
   return result;
 }
 
+// TODO: replace 'ends_with' function with builtin 'has_extension' call
 auto stasis::build::filter_files_by_extension(std::vector<std::string> files,
                                               std::string extension)
     -> std::vector<std::string>
@@ -81,16 +82,22 @@ auto stasis::build::parse_file_to_directory(std::string file, fs::path dirpath)
   {
     std::fstream md_file(file);
     md_src_stream << md_file.rdbuf();
-  } catch (stasis::last_error e)
+  } catch (const std::exception &e)
   {
-    THROW_ERROR;
+    throw e;
   }
   md_src = md_src_stream.str();
 
   maddy::Parser parser;
-  STASIS_TRACE("---- output of '{}' -----", file);
-  STASIS_TRACE("{}", parser.Parse(md_src_stream));
-  STASIS_TRACE("----   end output   -----");
+  std::string html = parser.Parse(md_src_stream);
+  // TODO: error handling...
+
+  fs::path final_filepath =
+      fs::path(file).filename().replace_extension(".html");
+  fs::path final_location = fs::weakly_canonical(dirpath / final_filepath);
+  STASIS_TRACE("writing html to location at '{}'", final_location.string());
+  std::ofstream output(final_location);
+  output << html;
 }
 
 stasis::build::build(stasis::project_info pi, std::string out_dir)
@@ -154,18 +161,32 @@ auto stasis::build::run(void) -> int
   STASIS_INFO("[step 2] parsing markdown files");
   stasis::output::normal("compiling project...");
 
-  try
+  int count = 0;
+  int md_files_count = markdown_files.size();
+
+  for (const auto &markdown_file : markdown_files)
   {
-    this->parse_file_to_directory(markdown_files[0], fs::path("."));
-  } catch (stasis::last_error e)
-  {
-    STASIS_ERROR("caught exception:");
-    STASIS_ERROR("{}", e.str(true));
-    STASIS_TRACE("reporting back to user");
-    stasis::output::error("cannot parse markdown file '{}': {}",
-                          markdown_files[0], e.errmsg);
-    return 1;
+    try
+    {
+      stasis::output::normal("[{}/{}] parsing '{}'\r", count, md_files_count,
+                             markdown_file);
+      this->parse_file_to_directory(markdown_file, this->output_directory);
+      count += 1;
+    } catch (stasis::last_error e)
+    {
+      STASIS_ERROR("caught exception:");
+      STASIS_ERROR("{}", e.str(true));
+      STASIS_TRACE("reporting back to user");
+      stasis::output::warning("cannot parse markdown file '{}': {}",
+                              markdown_file, e.errmsg);
+      count -= 1;
+      stasis::output::warning("parsing the rest of {} remaining markdown files",
+                              md_files_count - count);
+    }
   }
+
+  stasis::output::normal("parsed {} out of {} markdown files", count,
+                         md_files_count);
 
   return 0;
 }
